@@ -1,0 +1,33 @@
+{
+  "name": "schema-validation-engine",
+  "version": "0.1.0",
+  "description": "Node.js based data quality intelligence engine",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc",
+    "example": "ts-node examples/basic-usage.ts",
+    "demo": "ts-node examples/demo.ts",
+    "test": "jest",
+    "lint": "eslint src --ext .ts"
+  },
+  "keywords": [
+    "data-quality",
+    "schema-validation",
+    "data-analysis"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "ts-node": "^10.9.0",
+    "jest": "^29.0.0",
+    "ts-jest": "^29.0.0",
+    "@types/jest": "^29.0.0",
+    "eslint": "^8.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0"
+  }
+}
