@@ -16,7 +16,7 @@ export class CustomSchemaValidator implements ISchemaValidator {
         typeMismatches: [],
         severityCategories: { low: 0, medium: 0, high: 0 },
         frequentFailingFields: [],
-        recommendations: []
+        recommendations: ['No records to analyze']
       };
     }
 
@@ -30,16 +30,25 @@ export class CustomSchemaValidator implements ISchemaValidator {
         const hasValue = value !== undefined && value !== null &&
                         !(typeof value === 'string' && value.trim() === '');
 
-        if (isRequired && !hasValue) {
-          if (!fieldMissing) {
-            missingFields.push(field.name);
-            fieldMissing = true;
+        if (!hasValue) {
+          if (isRequired) {
+            if (!fieldMissing) {
+              missingFields.push(field.name);
+              fieldMissing = true;
+            }
+            errors.push({
+              field: field.name,
+              message: `Missing required field`,
+              recordIndex: index
+            });
+          } else {
+            // Optional missing as low-severity for intelligence
+            errors.push({
+              field: field.name,
+              message: `Optional field missing`,
+              recordIndex: index
+            });
           }
-          errors.push({
-            field: field.name,
-            message: `Missing required field`,
-            recordIndex: index
-          });
         }
 
         if (hasValue) {
@@ -92,6 +101,8 @@ export class CustomSchemaValidator implements ISchemaValidator {
       let severity: 'low' | 'medium' | 'high' = 'medium';
       if (error.message.includes('Type mismatch')) {
         severity = 'high';
+      } else if (error.message.includes('Optional field missing')) {
+        severity = 'low';
       } else if (error.message.includes('Missing')) {
         severity = 'medium';
       }
@@ -113,6 +124,9 @@ export class CustomSchemaValidator implements ISchemaValidator {
     }
     if (severityCategories.medium > 0) {
       recommendations.push('Add missing required fields or make them optional in schema');
+    }
+    if (severityCategories.low > 0) {
+      recommendations.push('Review optional fields with missing values (low severity)');
     }
     if (recommendations.length === 0) {
       recommendations.push('Dataset meets schema requirements');
